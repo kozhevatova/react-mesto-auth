@@ -9,11 +9,12 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmDeletePopup from './ConfirmDeletePopup';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
+import * as auth from '../utils/auth';
 
 function App() {
   //#region стейты
@@ -25,6 +26,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isRegisterValid, setIsRegisterValid] = useState(false);
 
   //стейты для открытия/закрытия попапов
   const [isEditProfileFormOpen, setIsEditProfileFormOpen] = useState(false);
@@ -33,11 +35,14 @@ function App() {
   const [isConfirmDeleteFormOpen, setIsConfirmDeleteFormOpen] = useState(false);
   const [isInfoPopupOpen, setIsInfoPopupOpen] = useState(false);
 
+  const history = useHistory();
+
   //#endregion
 
   //#region эффекты
   //получение данных о пользователе с сервера и присвоение этих данных контексту
   useEffect(() => {
+    handleTokenCheck();
     setIsLoading(true);
     Promise.all([
       api.getUserInfo(),
@@ -55,6 +60,7 @@ function App() {
         setIsLoading(false);
       });
   }, []);
+
   //#endregion
 
   //#region обработчики событий
@@ -214,6 +220,7 @@ function App() {
       })
   }
 
+  //методы для авторизации и регистрации
   const handleLogin = () => {
     setIsLoggedIn(true);
   }
@@ -222,12 +229,32 @@ function App() {
     setIsLoggedIn(false);
   }
 
+  const handleRegister = (status) => {
+    setIsInfoPopupOpen(status);
+    setIsRegisterValid(status);
+  }
+
   const handleHamburgerClick = () => {
     setIsHamburgerClicked(!isHamburgerClicked);
   }
 
+  //для определения содержимого в Header
   const handleRegisterOpen = () => {
     setIsRegisterOpen(!isRegisterOpen);
+  }
+
+  const handleTokenCheck = () => {
+    if(localStorage.getItem('jwt')) {
+      const jwt = localStorage.getItem('jwt');
+      auth.checkToken(jwt)
+        .then((res) => {
+          if(res) {
+            setIsLoggedIn(true);
+            history.push('/');
+          }
+        })
+        .catch((err) => console.log(err));
+    }
   }
 
   //#endregion
@@ -236,14 +263,15 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
 
-        <Header handleHamburgerClick={handleHamburgerClick} isHamburgerClicked={isHamburgerClicked} 
-          isRegisterOpen={isRegisterOpen} handleRegisterOpen={handleRegisterOpen} />
+        <Header handleHamburgerClick={handleHamburgerClick} isHamburgerClicked={isHamburgerClicked}
+          isRegisterOpen={isRegisterOpen} handleRegisterOpen={handleRegisterOpen} 
+          handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
         <Switch>
           <Route exact path="/sign-up">
-            <Register handleRegisterOpen={handleRegisterOpen}/>
+            <Register handleRegisterOpen={handleRegisterOpen} handleRegister={handleRegister}/>
           </Route>
           <Route exact path="/sign-in">
-            <Login />
+            <Login handleLogin={handleLogin} />
           </Route>
           <ProtectedRoute path="/" component={Main} isLoggedIn={isLoggedIn} cards={cards} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
@@ -251,7 +279,7 @@ function App() {
         </Switch>
         <Footer />
 
-        <InfoTooltip isOpen={isInfoPopupOpen} isValid={true} onClose={closeAllPopups} 
+        <InfoTooltip isOpen={isInfoPopupOpen} isValid={isRegisterValid} onClose={closeAllPopups}
           onClick={handleCLosePopupByClickOnOverlay} />
 
         <AddPlacePopup isOpen={isAddPlaceFormOpen} onClose={closeAllPopups}

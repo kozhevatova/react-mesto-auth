@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { loginEmail, loginPassword } from '../utils/constants';
+import * as auth from '../utils/auth';
+import { useHistory } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ handleLogin }) => {
+  const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,7 +26,17 @@ const Login = () => {
     if(!email || !password) {
       return;
     }
-    //auth
+    auth.authorize(email,password)
+      .then((data) => {
+        console.log('login',data)
+        if(data.token) {
+          setEmail('');
+          setPassword('');
+          handleLogin();
+          history.push('/');
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   return (

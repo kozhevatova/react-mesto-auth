@@ -1,10 +1,15 @@
 import { NavLink } from "react-router-dom";
 
 const Header = ({ handleHamburgerClick, isHamburgerClicked, isRegisterOpen,
-    handleRegisterOpen, isLoggedIn }) => {
+    handleRegisterOpen, handleLogout, isLoggedIn }) => {
     const path = (
         `${isRegisterOpen ? "/sign-in" : "/sign-up"}`
     );
+
+    const onLogout = () => {
+        handleLogout();
+        handleRegisterOpen();
+    }
 
     return (
         <header className="header">
@@ -13,7 +18,7 @@ const Header = ({ handleHamburgerClick, isHamburgerClicked, isRegisterOpen,
                 isLoggedIn ?
                     <div className="header__email-container">
                         <p className="header__email">email@mail.com</p>
-                        <NavLink to="/sign-in" className="header__button" onClick={handleRegisterOpen}>
+                        <NavLink to="/sign-in" className="header__button" onClick={onLogout}>
                             Выйти
                         </NavLink>
                     </div> :
