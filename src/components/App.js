@@ -9,9 +9,11 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmDeletePopup from './ConfirmDeletePopup';
-import validateForm from './FormValidator';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
+import Login from './Login';
+import Register from './Register';
+import InfoTooltip from './InfoTooltip';
 
 function App() {
   //#region стейты
@@ -22,12 +24,14 @@ function App() {
   const [cardToDelete, setCardToDelete] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   //стейты для открытия/закрытия попапов
   const [isEditProfileFormOpen, setIsEditProfileFormOpen] = useState(false);
   const [isAddPlaceFormOpen, setIsAddPlaceFormOpen] = useState(false);
   const [isEditAvatarFormOpen, setIsEditAvatarFormOpen] = useState(false);
   const [isConfirmDeleteFormOpen, setIsConfirmDeleteFormOpen] = useState(false);
+  const [isInfoPopupOpen, setIsInfoPopupOpen] = useState(false);
 
   //#endregion
 
@@ -172,6 +176,7 @@ function App() {
     setIsEditProfileFormOpen(false);
     setIsAddPlaceFormOpen(false);
     setIsConfirmDeleteFormOpen(false);
+    setIsInfoPopupOpen(false);
     setSelectedCard(null);
 
     removeEscListener();
@@ -221,25 +226,33 @@ function App() {
     setIsHamburgerClicked(!isHamburgerClicked);
   }
 
+  const handleRegisterOpen = () => {
+    setIsRegisterOpen(!isRegisterOpen);
+  }
+
   //#endregion
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
 
-        <Header handleHamburgerClick={handleHamburgerClick} isHamburgerClicked={isHamburgerClicked} />
+        <Header handleHamburgerClick={handleHamburgerClick} isHamburgerClicked={isHamburgerClicked} 
+          isRegisterOpen={isRegisterOpen} handleRegisterOpen={handleRegisterOpen} />
         <Switch>
           <Route exact path="/sign-up">
-
+            <Register handleRegisterOpen={handleRegisterOpen}/>
           </Route>
           <Route exact path="/sign-in">
-
+            <Login />
           </Route>
           <ProtectedRoute path="/" component={Main} isLoggedIn={isLoggedIn} cards={cards} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
             onCardLike={handleCardLike} onCardDelete={handleDeleteButtonClick} isLoading={isLoading} />
         </Switch>
         <Footer />
+
+        <InfoTooltip isOpen={isInfoPopupOpen} isValid={true} onClose={closeAllPopups} 
+          onClick={handleCLosePopupByClickOnOverlay} />
 
         <AddPlacePopup isOpen={isAddPlaceFormOpen} onClose={closeAllPopups}
           onAddPlace={handleAddPlace} isLoading={isLoading} onClick={handleCLosePopupByClickOnOverlay} />

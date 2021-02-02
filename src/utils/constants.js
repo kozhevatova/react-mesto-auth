@@ -1,5 +1,7 @@
 const popupName = 'popupName';
 const popupDescription = 'popupDescription';
+const loginEmail = 'loginEmail';
+const loginPassword = 'loginPassword';
 
 const validationConfig = {
   inputSelector: '.popup__input',
@@ -10,4 +12,4 @@ const validationConfig = {
   errorSelector: '.popup__input-error',
 };
 
-export { popupDescription, popupName, validationConfig} ;
+export { popupDescription, popupName, validationConfig, loginEmail, loginPassword } ;

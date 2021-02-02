@@ -8,10 +8,11 @@
   margin: 0;
   padding: 0;
   background: center/30px 30px url('../../../images/closeHamburger.svg') no-repeat transparent;
+  transition: opacity 0.6s linear;
 }
 
 .header__close-button:hover {
-  background: center/30px 30px url('../../../images/closeHamburgerHover.svg') no-repeat;
+  opacity: 0.6;
   cursor: pointer;
 }
 
