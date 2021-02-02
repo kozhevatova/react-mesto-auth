@@ -10,6 +10,8 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmDeletePopup from './ConfirmDeletePopup';
 import validateForm from './FormValidator';
+import { Route, Switch, Redirect } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 
 function App() {
   //#region стейты
@@ -18,6 +20,8 @@ function App() {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [cardToDelete, setCardToDelete] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
 
   //стейты для открытия/закрытия попапов
   const [isEditProfileFormOpen, setIsEditProfileFormOpen] = useState(false);
@@ -113,7 +117,7 @@ function App() {
     if (event.target !== event.currentTarget) {
       return;
     }
-  
+
     closeAllPopups();
   }
 
@@ -205,22 +209,43 @@ function App() {
       })
   }
 
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  }
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  }
+
+  const handleHamburgerClick = () => {
+    setIsHamburgerClicked(!isHamburgerClicked);
+  }
+
   //#endregion
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
-        <Main cards={cards} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
-          onCardLike={handleCardLike} onCardDelete={handleDeleteButtonClick} isLoading={isLoading} />
+
+        <Header handleHamburgerClick={handleHamburgerClick} isHamburgerClicked={isHamburgerClicked} />
+        <Switch>
+          <Route exact path="/sign-up">
+
+          </Route>
+          <Route exact path="/sign-in">
+
+          </Route>
+          <ProtectedRoute path="/" component={Main} isLoggedIn={isLoggedIn} cards={cards} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}
+            onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick}
+            onCardLike={handleCardLike} onCardDelete={handleDeleteButtonClick} isLoading={isLoading} />
+        </Switch>
         <Footer />
 
         <AddPlacePopup isOpen={isAddPlaceFormOpen} onClose={closeAllPopups}
           onAddPlace={handleAddPlace} isLoading={isLoading} onClick={handleCLosePopupByClickOnOverlay} />
 
         <ConfirmDeletePopup isOpen={isConfirmDeleteFormOpen} onClose={closeAllPopups}
-          onCardDelete={handleCardDelete} isLoading={isLoading} card={cardToDelete} 
+          onCardDelete={handleCardDelete} isLoading={isLoading} card={cardToDelete}
           onClick={handleCLosePopupByClickOnOverlay} />
 
         <EditAvatarPopup isOpen={isEditAvatarFormOpen} onClose={closeAllPopups}
@@ -230,7 +255,6 @@ function App() {
           onUpdateUser={handleUpdateUser} isLoading={isLoading} onClick={handleCLosePopupByClickOnOverlay} />
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} onClick={handleCLosePopupByClickOnOverlay} />
-
       </div>
     </CurrentUserContext.Provider>
   );
