@@ -15,6 +15,7 @@ import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import * as auth from '../utils/auth';
+import HamburgerInfo from './HamburgerInfo';
 
 function App() {
   //#region стейты
@@ -27,6 +28,7 @@ function App() {
   const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isRegisterValid, setIsRegisterValid] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState('');
 
   //стейты для открытия/закрытия попапов
   const [isEditProfileFormOpen, setIsEditProfileFormOpen] = useState(false);
@@ -50,6 +52,7 @@ function App() {
     ])
       .then((values) => {
         const [userInfo, initialCards] = values;
+        console.log(userInfo);
         setCurrentUser(userInfo);
         setCards(initialCards);
       })
@@ -222,16 +225,21 @@ function App() {
 
   //методы для авторизации и регистрации
   const handleLogin = () => {
-    setIsLoggedIn(true);
+    // setIsLoggedIn(true);
+    handleTokenCheck();
   }
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setIsHamburgerClicked(false);
+    setIsRegisterOpen(false);
+    localStorage.removeItem('jwt');
   }
 
   const handleRegister = (status) => {
     setIsInfoPopupOpen(status);
     setIsRegisterValid(status);
+    setIsRegisterOpen(false);
   }
 
   const handleHamburgerClick = () => {
@@ -244,11 +252,12 @@ function App() {
   }
 
   const handleTokenCheck = () => {
-    if(localStorage.getItem('jwt')) {
+    if (localStorage.getItem('jwt')) {
       const jwt = localStorage.getItem('jwt');
       auth.checkToken(jwt)
         .then((res) => {
-          if(res) {
+          setCurrentEmail(res.data.email);
+          if (res) {
             setIsLoggedIn(true);
             history.push('/');
           }
@@ -262,13 +271,13 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-
+        {isHamburgerClicked && <HamburgerInfo email={currentEmail} handleLogout={handleLogout} />}
         <Header handleHamburgerClick={handleHamburgerClick} isHamburgerClicked={isHamburgerClicked}
-          isRegisterOpen={isRegisterOpen} handleRegisterOpen={handleRegisterOpen} 
-          handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
+          isRegisterOpen={isRegisterOpen} handleRegisterOpen={handleRegisterOpen}
+          handleLogout={handleLogout} isLoggedIn={isLoggedIn} email={currentEmail} />
         <Switch>
           <Route exact path="/sign-up">
-            <Register handleRegisterOpen={handleRegisterOpen} handleRegister={handleRegister}/>
+            <Register handleRegisterOpen={handleRegisterOpen} handleRegister={handleRegister} />
           </Route>
           <Route exact path="/sign-in">
             <Login handleLogin={handleLogin} />

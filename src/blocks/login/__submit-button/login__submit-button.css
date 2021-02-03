@@ -19,3 +19,11 @@
   background-color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
 }
+
+@media screen and (min-width: 320px) and (max-width: 479px) {
+  .login__submit-button {
+    margin-top: 40.625vw;
+    min-height: 46px;
+    font-size: 16px;
+  }
+}

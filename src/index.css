@@ -12,6 +12,10 @@
 @import url('./blocks/header/__hamburger/header__hamburger.css');
 @import url('./blocks/header/__close-button/header__close-button.css');
 
+@import url('./blocks/info/info.css');
+@import url('./blocks/info/__email/info__email.css');
+@import url('./blocks/info/__link/info__link.css');
+
 @import url('./blocks/content/content.css');
 
 @import url('./blocks/login/login.css');

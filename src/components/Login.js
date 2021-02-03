@@ -28,7 +28,6 @@ const Login = ({ handleLogin }) => {
     }
     auth.authorize(email,password)
       .then((data) => {
-        console.log('login',data)
         if(data.token) {
           setEmail('');
           setPassword('');
@@ -43,8 +42,10 @@ const Login = ({ handleLogin }) => {
     <div className="login">
       <h2 className="login__title">Вход</h2>
       <form className="login__form" method="POST" onSubmit={handleSubmit}>
-        <input className="login__input login__email" type="email" name="loginEmail" placeholder="Email" required
-          id="email-input" value={email} onChange={handleInputChange}></input>
+        <input className="login__input login__email" type="email" name="loginEmail" placeholder="Email" 
+        required id="email-input" value={email} onChange={handleInputChange}
+        pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b"
+        ></input>
         <input className="login__input login__password" type="password" name="loginPassword" placeholder="Пароль" required
           id="password-input" value={password} onChange={handleInputChange}></input>
         <button className="login__submit-button" type="submit">Войти</button>
