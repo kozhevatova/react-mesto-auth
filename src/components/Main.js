@@ -30,16 +30,12 @@ const Main = ({ cards, onEditProfile, onAddPlace, onEditAvatar,
         <ul className="elements">
           {isLoading && <Spinner />}
           {
-            // isLoading ? (
-            //   <Spinner />
-            // ) : (
             cards.map((card) => {
               return (
                 <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike}
                   onCardDelete={onCardDelete} />
               );
             })
-            // )
           }
         </ul>
       </div>
