@@ -8,7 +8,7 @@ const Main = ({ cards, onEditProfile, onAddPlace, onEditAvatar,
   const currentUser = useContext(CurrentUserContext);
 
   return (
-    <main className="content"> 
+    <main className="content">
       <section className="profile">
         <div className="profile__avatar" style={{ background: `center/cover url(${currentUser.avatar}) no-repeat` }}>
           <button className="profile__edit-avatar-button"
@@ -27,18 +27,20 @@ const Main = ({ cards, onEditProfile, onAddPlace, onEditAvatar,
       </section>
 
       <div>
-        <ul className="elements"> {
-          isLoading ? (
-            <Spinner />
-          ) : (
-              cards.map((card) => {
-                return (
-                    <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike}
-                      onCardDelete={onCardDelete} />
-                );
-              })
-            )
-        }
+        <ul className="elements">
+          {isLoading && <Spinner />}
+          {
+            // isLoading ? (
+            //   <Spinner />
+            // ) : (
+            cards.map((card) => {
+              return (
+                <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike}
+                  onCardDelete={onCardDelete} />
+              );
+            })
+            // )
+          }
         </ul>
       </div>
     </main>

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink, useHistory } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { loginEmail, loginPassword } from '../utils/constants';
-import * as auth from '../utils/auth';
 
 const Register = ({ handleRegisterOpen, handleRegister }) => {
-  const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -26,20 +24,7 @@ const Register = ({ handleRegisterOpen, handleRegister }) => {
     if (!email || !password) {
       return;
     }
-    auth.register(email, password)
-      .then((res) => {
-        if (res) {
-          handleRegister(true);
-          history.push('/sign-in');
-        } else {
-          handleRegister(false);
-          console.log('Error');
-        }
-      })
-      .catch((err) => {
-        handleSubmit(false);
-        console.log(err);
-      });
+    handleRegister(email,password);
   }
 
   return (
@@ -48,7 +33,7 @@ const Register = ({ handleRegisterOpen, handleRegister }) => {
       <form className="login__form" onSubmit={handleSubmit}>
         <input className="login__input login__email" type="email" name="loginEmail" placeholder="Email"
           required id="email-input" value={email} onChange={handleInputChange}
-          pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b"
+          pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2,})\b"
         ></input>
         <input className="login__input login__password" type="password" name="loginPassword" placeholder="Пароль"
           required id="password-input" value={password} onChange={handleInputChange}></input>

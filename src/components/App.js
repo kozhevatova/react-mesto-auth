@@ -9,7 +9,7 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmDeletePopup from './ConfirmDeletePopup';
-import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
@@ -44,7 +44,6 @@ function App() {
   //#region эффекты
   //получение данных о пользователе с сервера и присвоение этих данных контексту
   useEffect(() => {
-    handleTokenCheck();
     setIsLoading(true);
     Promise.all([
       api.getUserInfo(),
@@ -52,7 +51,6 @@ function App() {
     ])
       .then((values) => {
         const [userInfo, initialCards] = values;
-        console.log(userInfo);
         setCurrentUser(userInfo);
         setCards(initialCards);
       })
@@ -63,6 +61,24 @@ function App() {
         setIsLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    const handleTokenCheck = () => {
+      if (localStorage.getItem('jwt')) {
+        const jwt = localStorage.getItem('jwt');
+        auth.checkToken(jwt)
+          .then((res) => {
+            setCurrentEmail(res.data.email);
+            if (res) {
+              setIsLoggedIn(true);
+              history.push('/');
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    }
+    handleTokenCheck();
+  }, [history]);
 
   //#endregion
 
@@ -224,9 +240,16 @@ function App() {
   }
 
   //методы для авторизации и регистрации
-  const handleLogin = () => {
-    // setIsLoggedIn(true);
-    handleTokenCheck();
+  const handleLogin = (email,password) => {
+    auth.authorize(email,password)
+      .then((data) => {
+        if(data.token) {
+          setCurrentEmail(email);
+          setIsLoggedIn(true);
+          history.push('/');
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   const handleLogout = () => {
@@ -236,10 +259,25 @@ function App() {
     localStorage.removeItem('jwt');
   }
 
-  const handleRegister = (status) => {
-    setIsInfoPopupOpen(status);
-    setIsRegisterValid(status);
-    setIsRegisterOpen(false);
+  const handleRegister = (email, password) => {
+    auth.register(email, password)
+      .then((res) => {
+        if (res) {
+          setIsInfoPopupOpen(true);
+          setIsRegisterValid(true);
+          setIsRegisterOpen(false);
+          history.push('/sign-in');
+        } else {
+          setIsInfoPopupOpen(true);
+          setIsRegisterValid(false);
+          console.log('Error');
+        }
+      })
+      .catch((err) => {
+        setIsInfoPopupOpen(true);
+        setIsRegisterValid(false);
+        console.log(err);
+      });
   }
 
   const handleHamburgerClick = () => {
@@ -251,20 +289,20 @@ function App() {
     setIsRegisterOpen(!isRegisterOpen);
   }
 
-  const handleTokenCheck = () => {
-    if (localStorage.getItem('jwt')) {
-      const jwt = localStorage.getItem('jwt');
-      auth.checkToken(jwt)
-        .then((res) => {
-          setCurrentEmail(res.data.email);
-          if (res) {
-            setIsLoggedIn(true);
-            history.push('/');
-          }
-        })
-        .catch((err) => console.log(err));
-    }
-  }
+  // const handleTokenCheck = () => {
+  //   if (localStorage.getItem('jwt')) {
+  //     const jwt = localStorage.getItem('jwt');
+  //     auth.checkToken(jwt)
+  //       .then((res) => {
+  //         setCurrentEmail(res.data.email);
+  //         if (res) {
+  //           setIsLoggedIn(true);
+  //           history.push('/');
+  //         }
+  //       })
+  //       .catch((err) => console.log(err));
+  //   }
+  // }
 
   //#endregion
 

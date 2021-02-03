@@ -25,8 +25,8 @@ const EditAvatarPopup = ({isOpen, onClose, onUpdateAvatar, isLoading, onClick}) 
       "Сохранение..." : "Сохранить"} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit} 
       onClick={onClick} >
       <input type="url" className="popup__input popup__description" name="avatarUrl"
-        placeholder="Ссылка на аватар" required id="url-input" ref={inputRef}/>
-      <span className="popup__input-error" id="url-input-error"></span>
+        placeholder="Ссылка на аватар" required id="avatar-input" ref={inputRef}/>
+      <span className="popup__input-error" id="avatar-input-error"></span>
     </PopupWithForm>
   );
 }

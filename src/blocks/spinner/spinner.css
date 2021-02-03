@@ -7,7 +7,10 @@
 
 .spinner {
   margin: 60px auto;
-  position: relative;
+  position: fixed;
+  top: 66%;
+  left: 50%; 
+  z-index: 10;
   text-indent: -9999em;
   border-top: 3px solid rgba(190, 190, 190, 0.2);
   border-right: 3px solid rgba(190, 190, 190, 0.2);
